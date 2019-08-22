@@ -1,0 +1,7 @@
+.idea/*
+.idea
+*.iml
+.git
+dependency-reduced-pom.xml
+client/target
+server/target
