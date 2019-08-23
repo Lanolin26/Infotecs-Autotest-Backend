@@ -1,22 +1,22 @@
 package ru.lanolin.server;
 
 import ru.lanolin.util.ConfigApplication;
+import ru.lanolin.util.Message;
+import ru.lanolin.util.Utils;
 
 import java.io.IOException;
+import java.io.StreamCorruptedException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.util.Iterator;
 import java.util.Set;
 
 import static ru.lanolin.Main.isDebug;
 
-public class Server extends Thread {
+public class Server {
 
 	private static Server server;
 
@@ -31,14 +31,17 @@ public class Server extends Thread {
 	private ServerSocketChannel socketChannel;
 
 	private Server() {
-		super("[SERVER]");
-
 		socketAddress = new InetSocketAddress(
 				ConfigApplication.getInstance().getIntegerProperty("port_main", 45777));
 		try {
 			selector = Selector.open();
-
 			socketChannel = ServerSocketChannel.open();
+		} catch (IOException e) {
+			if (isDebug) e.printStackTrace();
+			throw new RuntimeException("Ошибка при открытии сервера");
+		}
+
+		try {
 			socketChannel.bind(socketAddress);
 			socketChannel.configureBlocking(false);
 			socketChannel.register(selector, socketChannel.validOps(), null);
@@ -56,17 +59,16 @@ public class Server extends Thread {
 		return selector.isOpen() && socketChannel.isOpen();
 	}
 
-	@Override
-	public void run() {
-		super.run();
+
+	public void start() {
 		try {
 			System.out.println("Сервер запущен");
-			while (isConnect() && !isInterrupted()) {
+			while (selector.isOpen() && socketChannel.isOpen()) {
 				selector.select();
 				Set<SelectionKey> selectionKeys = selector.selectedKeys();
 				Iterator<SelectionKey> selectionKeyIterator = selectionKeys.iterator();
 
-				while (selectionKeyIterator.hasNext() && isConnect()) {
+				while (selectionKeyIterator.hasNext() && selector.isOpen() && socketChannel.isOpen()) {
 					SelectionKey myKey = selectionKeyIterator.next();
 
 					if (!myKey.isValid()) { continue; }
@@ -75,34 +77,11 @@ public class Server extends Thread {
 						SocketChannel socketClient = socketChannel.accept();
 						socketClient.configureBlocking(false);
 						socketClient.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
-						socketClient.register(selector, SelectionKey.OP_READ);
-						System.out.println("Connection Accepted: " + socketClient.getRemoteAddress());
-					} else if(myKey.isReadable()){
-						SocketChannel sc = (SocketChannel) myKey.channel();
-						ByteBuffer buffer = ByteBuffer.allocate(2048);
-
-						int read = -1;
-						try{
-							read = sc.read(buffer);
-						}catch (IOException ex1){
-							myKey.cancel();
-							sc.close();
-							System.out.println("Forceful shutdown");
-							continue;
-						}
-
-						if (read == -1) {
-							System.out.println("Graceful shutdown");
-							myKey.channel().close();
-							myKey.cancel();
-							continue;
-						}
-
-						System.out.println(sc.getRemoteAddress() + ": " + new String(buffer.array()).trim());
-
-					} else if (myKey.isWritable()) {
-						SocketChannel sc = (SocketChannel) myKey.channel();
-//
+						socketClient.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+						System.out.println("Connection Accepted: " + socketClient.getRemoteAddress() + "\n");
+					} else if (myKey.isReadable()) {
+						SocketChannel socketChannel = (SocketChannel) myKey.channel();
+						readInSocketClient(socketChannel);
 					}
 					selectionKeyIterator.remove();
 				}
@@ -112,13 +91,39 @@ public class Server extends Thread {
 		}
 	}
 
-	@Override
-	public void interrupt() {
+	private void readInSocketClient(SocketChannel socketClient) throws ClosedChannelException {
+		try {
+			ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+			socketClient.read(byteBuffer);
+
+			Message mResult = Utils.convertBuffer2Message(byteBuffer);
+
+			if (mResult == null) {
+				socketClient.register(selector, SelectionKey.OP_CONNECT);
+				return;
+			} else if (mResult.getType() == Message.Type.PING) {
+				return;
+			}
+
+			System.out.println("Message received: " + mResult);
+
+			if(mResult.getType() != null) {
+				AnswerThread answerThread = new AnswerThread(socketClient, mResult.clone());
+				answerThread.start();
+			}
+		} catch (StreamCorruptedException ex){
+			socketClient.register(selector, SelectionKey.OP_CONNECT);
+		} catch (IOException | CloneNotSupportedException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void stop() {
 		try {
 			if (socketChannel.isOpen()) socketChannel.close();
 			if (selector.isOpen()) selector.close();
-		} catch (IOException e) { if (isDebug) e.printStackTrace(); }
-		super.interrupt();
+		} catch (IOException e) {
+			if (isDebug) e.printStackTrace();
+		}
 	}
-
 }

@@ -2,11 +2,8 @@ package ru.lanolin.util;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Utils {
@@ -28,29 +25,26 @@ public class Utils {
 		try {
 			result = (Map<String, Object>) JAVASCRIPT.eval("Java.asJSONCompatible(" + element + ")");
 		} catch (Exception e) {
-			System.err.println("Внимание!!! Введен неверный формат JSON строки. Исправьте или не продолжайте работать.");
+			System.err.println("Внимание!!! Введен неверный формат JSON строки. Повторите ввод");
 		}
 		return result;
 	}
 
-	/**
-	 * Конвертирует сериализуемый объект в {@link ByteBuffer} для последующей отправки через {@link java.net.Socket}
-	 *
-	 * @param obj {@link Object} {@code implements {@link java.io.Serializable}}
-	 * @return {@code ByteBuffer} запоненный преобразованным касов дя отправки
-	 * @throws IOException Возникает, если невозможно преобразовать класс в {@link ByteBuffer}
-	 */
 	public static ByteBuffer convertObject2Buffer(Object obj) throws IOException {
-		ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
-		ObjectOutputStream outputStreamWriter = new ObjectOutputStream(arrayOutputStream);
+		try(ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+			ObjectOutputStream outputStreamWriter = new ObjectOutputStream(arrayOutputStream)) {
 
-		outputStreamWriter.writeObject(obj);
-		outputStreamWriter.flush();
-		ByteBuffer b = ByteBuffer.wrap(arrayOutputStream.toByteArray());
-		outputStreamWriter.close();
-		arrayOutputStream.close();
+			outputStreamWriter.writeObject(obj);
+			outputStreamWriter.flush();
+			return ByteBuffer.wrap(arrayOutputStream.toByteArray());
+		}
+	}
 
-		return b;
+	public static Message convertBuffer2Message(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
+		try(ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(byteBuffer.array());
+			ObjectInputStream objectInputStream = new ObjectInputStream(arrayInputStream)){
+			return (Message) objectInputStream.readObject();
+		}
 	}
 
 }
