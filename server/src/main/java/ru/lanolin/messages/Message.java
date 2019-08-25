@@ -1,4 +1,4 @@
-package ru.lanolin.util;
+package ru.lanolin.messages;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +23,7 @@ public class Message implements Serializable, Cloneable {
 		NEW_MESSAGE,
 		SHOW_MY_MESSAGE,
 		SHOW_ALL_MESSAGE,
+		DELETE
 	}
 
 	private String login;

@@ -1,25 +1,18 @@
 package ru.lanolin.client;
 
-import javafx.application.Platform;
 import lombok.Getter;
+import ru.lanolin.Main;
 import ru.lanolin.client.threads.HeartBeatThread;
-import ru.lanolin.client.threads.ThreadReader;
 import ru.lanolin.util.ConfigApplication;
 import ru.lanolin.util.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static ru.lanolin.Main.isDebug;
 
 public class Client {
 
@@ -38,10 +31,12 @@ public class Client {
 	private final Lock pause = new ReentrantLock();
 
 	private final HeartBeatThread heartbeatThread;
-	private final ThreadReader threadReader;
+//	private final ThreadReader threadReader;
 
 	@Getter
 	private final Writer writer;
+	@Getter
+	private final Reader reader;
 
 	private Client(){
 		ConfigApplication config = ConfigApplication.getInstance();
@@ -49,7 +44,8 @@ public class Client {
 		port = config.getIntegerProperty("port_main");
 
 		this.heartbeatThread = new HeartBeatThread(this);
-		this.threadReader = new ThreadReader(this);
+//		this.threadReader = new ThreadReader(this);
+		this.reader = new Reader(this);
 		this.writer = new Writer(this);
 	}
 
@@ -57,8 +53,8 @@ public class Client {
 		try {
 			socket = new Socket(host, port);
 			heartbeatThread.start();
-			threadReader.start();
-			System.out.println("Успешно подключено");
+			Utils.printlnf("Успешно подключено");
+			Main.menu.start();
 		} catch (IOException e) {
 			throw e;
 		}
@@ -110,11 +106,12 @@ public class Client {
 		System.out.println("Прекращается работа");
 
 		heartbeatThread.interrupt();
-		threadReader.interrupt();
+//		threadReader.interrupt();
 		try {
 			socket.close();
 		} catch (IOException e) {
 			System.err.println(e.getLocalizedMessage());
 		}
+		System.exit(0);
 	}
 }

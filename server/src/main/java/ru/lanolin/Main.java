@@ -1,7 +1,7 @@
 package ru.lanolin;
 
 import ru.lanolin.server.Server;
-import ru.lanolin.server.UserMessages;
+import ru.lanolin.messages.UserMessages;
 import ru.lanolin.util.ConfigApplication;
 import ru.lanolin.util.XML;
 

@@ -9,7 +9,7 @@
     <version>1.0</version>
     <packaging>pom</packaging>
 
-    <name>Ibfotecs Autotest Backend</name>
+    <name>Infotecs Autotest Backend</name>
 
     <modules>
 	    <module>server</module>

@@ -1,5 +1,7 @@
 package ru.lanolin.util;
 
+import ru.lanolin.messages.Message;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.*;
@@ -7,6 +9,16 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 public class Utils {
+
+	public static void printlnf(String arg){
+		System.out.println(arg);
+		System.out.flush();
+	}
+
+	public static void printf(String arg){
+		System.out.print(arg);
+		System.out.flush();
+	}
 
 	/**
 	 * Скриптовый движок, используется для преобразований {@code JSON} строк в {@link Map}
@@ -25,6 +37,7 @@ public class Utils {
 		try {
 			result = (Map<String, Object>) JAVASCRIPT.eval("Java.asJSONCompatible(" + element + ")");
 		} catch (Exception e) {
+//			e.printStackTrace();
 			System.err.println("Внимание!!! Введен неверный формат JSON строки. Повторите ввод");
 		}
 		return result;

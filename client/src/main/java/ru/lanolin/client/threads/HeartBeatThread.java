@@ -1,7 +1,7 @@
 package ru.lanolin.client.threads;
 
 import ru.lanolin.client.Client;
-import ru.lanolin.util.Message;
+import ru.lanolin.messages.Message;
 import ru.lanolin.util.Utils;
 
 import java.io.IOException;
@@ -18,6 +18,7 @@ public class HeartBeatThread extends Thread {
 	public HeartBeatThread(Client client) {
 		super("[HeartBeat]");
 		this.client = client;
+		ping = new Message("service", Message.Type.PING, null);
 	}
 
 	@Override
@@ -25,7 +26,6 @@ public class HeartBeatThread extends Thread {
 		super.run();
 		while (tryToReconnect) {
 			try {
-				ping = new Message("", Message.Type.PING, null);
 				client.getLock().lock();
 				client.getOutputStream().write(Utils.convertMessage2ByteArray(ping));
 				client.getLock().unlock();
@@ -40,10 +40,10 @@ public class HeartBeatThread extends Thread {
 				tryToReconnect = false;
 			} catch (IOException e) {
 				client.connect(client.getHostname(), client.getPort());
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e1) {
-				}
+//				try {
+//					Thread.sleep(2000);
+//				} catch (InterruptedException e1) {
+//				}
 			}
 		}
 	}

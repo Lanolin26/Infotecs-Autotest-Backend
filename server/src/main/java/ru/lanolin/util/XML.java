@@ -1,6 +1,6 @@
 package ru.lanolin.util;
 
-import ru.lanolin.server.UserMessages;
+import ru.lanolin.messages.UserMessages;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -22,6 +22,7 @@ public class XML {
 		if(!xmlFile.exists()) {
 			try {
 				xmlFile.createNewFile();
+				writeDocument(new ArrayList<>());
 			} catch (IOException e) { e.printStackTrace(); }
 		}
 	}

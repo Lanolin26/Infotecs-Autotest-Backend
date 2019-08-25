@@ -1,4 +1,4 @@
-package ru.lanolin.server;
+package ru.lanolin.messages;
 
 import lombok.*;
 
@@ -14,7 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 public class UserMessages implements Serializable {
 
-	public static final transient List<UserMessages> STORAGE =
+	private static final long serialVersionUID = 1685316L;
+
+	public static transient List<UserMessages> STORAGE =
 			Collections.synchronizedList(new ArrayList<>());
 
 	private String login;

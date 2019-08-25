@@ -1,5 +1,7 @@
 package ru.lanolin.util;
 
+import ru.lanolin.messages.Message;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.*;

@@ -23,7 +23,7 @@ public class MenuItems {
 		for (int i = 0; i < actionNames.size(); i++) {
 			sb.append(String.format(" %d: %s%n", i + 1, actionNames.get(i)));
 		}
-		return sb.toString();
+		return sb.toString().trim();
 	}
 
 	public int getLength(){

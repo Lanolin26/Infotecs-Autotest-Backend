@@ -1,6 +1,6 @@
 package ru.lanolin.client;
 
-import ru.lanolin.util.Message;
+import ru.lanolin.messages.Message;
 import ru.lanolin.util.Utils;
 
 import java.io.IOException;
