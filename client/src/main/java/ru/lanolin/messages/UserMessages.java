@@ -1,20 +1,11 @@
 package ru.lanolin.messages;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserMessages implements Serializable {
 
 	private static final long serialVersionUID = 1685316L;
@@ -25,6 +16,38 @@ public class UserMessages implements Serializable {
 	private String login;
 	private LocalDateTime date;
 	private String message;
+
+	public UserMessages() { }
+
+	public UserMessages(String login, LocalDateTime date, String message) {
+		this.login = login;
+		this.date = date;
+		this.message = message;
+	}
+
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	public LocalDateTime getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDateTime date) {
+		this.date = date;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
 	@Override
 	public String toString() {

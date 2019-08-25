@@ -2,6 +2,7 @@ package ru.lanolin.client;
 
 import ru.lanolin.messages.Message;
 import ru.lanolin.messages.UserMessages;
+import ru.lanolin.util.Utils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -50,25 +51,25 @@ public class Reader {
 
 	@SuppressWarnings("unchecked")
 	private void msgParser(Message msg) {
-		System.out.println(msg);
-
 		switch (msg.getType()){
 			case ANSWER:
-				System.out.println(">>" + msg.getMessage());
+				Utils.printlnf(">>Server: " + msg.getMessage());
 				break;
 			case ERROR:
-				System.err.println(">>" + msg.getMessage());
+				System.err.println(">>Server Error" + msg.getMessage());
 				break;
 			case ARRAY:
 				List<UserMessages> message = (ArrayList<UserMessages>) msg.getMessage();
-				ListIterator it = message.listIterator();
-				System.out.println("Index | message");
+				ListIterator<UserMessages> it = message.listIterator();
+				Utils.printlnf("  ID  | Login |          Date           | Message");
 				while (it.hasNext()){
-					System.out.println(it.nextIndex() + ": " + it.next());
+					int ind = it.nextIndex();
+					UserMessages um = it.next();
+					Utils.printlnf(String.format(" %4d | %5s | %19s | %s", ind, um.getLogin(), um.getDate(), um.getMessage()));
 				}
 				break;
 		}
-		System.out.flush();
+		Utils.printlnf("");
 	}
 
 }

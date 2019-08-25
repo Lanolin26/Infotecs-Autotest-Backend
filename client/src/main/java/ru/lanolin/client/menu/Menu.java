@@ -1,15 +1,12 @@
 package ru.lanolin.client.menu;
 
-import lombok.Getter;
-import ru.lanolin.client.Client;
 import ru.lanolin.messages.Message;
 import ru.lanolin.util.Utils;
 
 import java.io.IOException;
 import java.util.Objects;
 
-import static ru.lanolin.Main.console;
-import static ru.lanolin.Main.isDebug;
+import static ru.lanolin.Main.*;
 
 public class Menu {
 
@@ -19,14 +16,14 @@ public class Menu {
 
 	private MenuItems mainMenuItems, sortType;
 
-	@Getter private String login;
+	private String login;
 
 	public Menu() {
 		sortType = new MenuItems("Сортировка");
 		sortType.putAction("Сортировка оп логину", () -> this.showAllMessage(true));
 		sortType.putAction("Сортировка оп дате", () -> this.showAllMessage(false));
 
-		mainMenuItems = new MenuItems("Main");
+		mainMenuItems = new MenuItems("Меню");
 		mainMenuItems.putAction("Ввести новое сообщение", this::enterNewMessage);
 		mainMenuItems.putAction("Показать список своих сообщений", this::showMyMessage);
 		mainMenuItems.putAction("Показать список всех сообщений", () -> this.activateMenu(sortType));
@@ -56,8 +53,10 @@ public class Menu {
 				}else{
 					login = input;
 				}
+				Utils.printlnf("");
 			}else{
 				Utils.printlnf(newMenuItems.generateText());
+				Utils.printlnf("");
 				Utils.printf("Введите действие: ");
 				try {
 					String input = readText();
@@ -94,42 +93,26 @@ public class Menu {
 			if(strLine == null || TERMINATOR_STRING.equals(strLine)) break;
 			b.append(strLine.trim());
 		}
-//		log.warn(b.toString());
+
 		if(Utils.parseJSON(b.toString()) != null) {
-			Message m = new Message(
-					login,
-					Message.Type.NEW_MESSAGE,
-					b.toString()
-			);
-			Client.getInstance().getWriter().sendMessage(m);
-			Client.getInstance().getReader().readMessage();
-//			System.out.println("Отправлено");
+			Message m = new Message(login, Message.Type.NEW_MESSAGE, b.toString());
+			sendAndReceiveMessage(m);
 		}
 	}
 
 	private void showMyMessage(){
-		Message m = new Message(
-				login,
-				Message.Type.SHOW_MY_MESSAGE,
-				null
-		);
-		Client.getInstance().getWriter().sendMessage(m);
-		Client.getInstance().getReader().readMessage();
+		Message m = new Message(login, Message.Type.SHOW_MY_MESSAGE, null);
+		sendAndReceiveMessage(m);
 	}
 
 	private void showAllMessage(boolean isLoginSort) {
-		Message m = new Message(
-				login,
-				Message.Type.SHOW_ALL_MESSAGE,
-				isLoginSort
-		);
-		Client.getInstance().getWriter().sendMessage(m);
-		Client.getInstance().getReader().readMessage();
+		Message m = new Message(login, Message.Type.SHOW_ALL_MESSAGE, isLoginSort);
+		sendAndReceiveMessage(m);
 		activateMenu(mainMenuItems);
 	}
 
 	private void deleteMyMessage(){
-		Utils.printlnf("Введите идентификатор своего сообщения для удаления: ");
+		Utils.printf("Введите идентификатор своего сообщения для удаления: ");
 		String ids = readText();
 		int id = -1;
 		try{
@@ -143,17 +126,18 @@ public class Menu {
 			return;
 		}
 
-		Message m = new Message(
-				login,
-				Message.Type.DELETE,
-				id
-		);
-		Client.getInstance().getWriter().sendMessage(m);
-		Client.getInstance().getReader().readMessage();
+		Message m = new Message(login, Message.Type.DELETE, id);
+		sendAndReceiveMessage(m);
 	}
 
 	private void exitSession(){
 		login = null;
 		Utils.printlnf("Выход из сессии");
+	}
+
+	private void sendAndReceiveMessage(Message m){
+		client.getWriter().sendMessage(m);
+		Utils.printlnf("");
+		client.getReader().readMessage();
 	}
 }

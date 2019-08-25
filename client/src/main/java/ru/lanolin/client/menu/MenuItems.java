@@ -26,10 +26,6 @@ public class MenuItems {
 		return sb.toString().trim();
 	}
 
-	public int getLength(){
-		return actionsMap.size();
-	}
-
 	public void executeAction(int actionNumber) {
 		int effectiveActionNumber = actionNumber - 1;
 		if (effectiveActionNumber < 0 || effectiveActionNumber >= actionsMap.size()) {

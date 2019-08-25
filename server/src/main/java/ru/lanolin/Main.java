@@ -1,7 +1,7 @@
 package ru.lanolin;
 
-import ru.lanolin.server.Server;
 import ru.lanolin.messages.UserMessages;
+import ru.lanolin.server.Server;
 import ru.lanolin.util.ConfigApplication;
 import ru.lanolin.util.XML;
 
@@ -33,6 +33,7 @@ public class Main {
 		}
 
 		Server.getInstance().start();
+
 	}
 
 	private static void saveAndClose(){

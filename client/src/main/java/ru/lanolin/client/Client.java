@@ -1,6 +1,5 @@
 package ru.lanolin.client;
 
-import lombok.Getter;
 import ru.lanolin.Main;
 import ru.lanolin.client.threads.HeartBeatThread;
 import ru.lanolin.util.ConfigApplication;
@@ -14,14 +13,11 @@ import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static ru.lanolin.Main.isDebug;
+
 public class Client {
 
-	private static Client instance;
-	public static Client getInstance() {
-		return Objects.isNull(instance) ? instance = new Client() : instance;
-	}
-
-	private final String host;
+	private String host;
 	private final int port;
 	private Socket socket;
 
@@ -30,33 +26,41 @@ public class Client {
 
 	private final Lock pause = new ReentrantLock();
 
-	private final HeartBeatThread heartbeatThread;
+	private HeartBeatThread heartbeatThread;
 //	private final ThreadReader threadReader;
 
-	@Getter
-	private final Writer writer;
-	@Getter
-	private final Reader reader;
+	private Writer writer;
+	private Reader reader;
 
-	private Client(){
+	public Client(){
 		ConfigApplication config = ConfigApplication.getInstance();
 		host = config.getStringProperty("hostname");
 		port = config.getIntegerProperty("port_main");
+		createVar();
+	}
 
+	public Client(String host){
+		ConfigApplication config = ConfigApplication.getInstance();
+		port = config.getIntegerProperty("port_main");
+		this.host = host;
+		createVar();
+	}
+
+	private void createVar(){
 		this.heartbeatThread = new HeartBeatThread(this);
-//		this.threadReader = new ThreadReader(this);
 		this.reader = new Reader(this);
 		this.writer = new Writer(this);
 	}
 
-	public void connect() throws IOException {
+	public void connect() {
 		try {
 			socket = new Socket(host, port);
 			heartbeatThread.start();
 			Utils.printlnf("Успешно подключено");
 			Main.menu.start();
 		} catch (IOException e) {
-			throw e;
+			if(isDebug) e.printStackTrace();
+			System.err.println("Внимание!! Невозможно подключиться к серверу. " + e.getLocalizedMessage());
 		}
 	}
 
@@ -94,6 +98,14 @@ public class Client {
 		return socket.getOutputStream();
 	}
 
+	public Writer getWriter() {
+		return writer;
+	}
+
+	public Reader getReader() {
+		return reader;
+	}
+
 	public boolean isConnected() {
 		return socket != null && socket.isConnected();
 	}
@@ -106,7 +118,6 @@ public class Client {
 		System.out.println("Прекращается работа");
 
 		heartbeatThread.interrupt();
-//		threadReader.interrupt();
 		try {
 			socket.close();
 		} catch (IOException e) {

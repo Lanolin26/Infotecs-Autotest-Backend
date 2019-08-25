@@ -40,10 +40,10 @@ public class HeartBeatThread extends Thread {
 				tryToReconnect = false;
 			} catch (IOException e) {
 				client.connect(client.getHostname(), client.getPort());
-//				try {
-//					Thread.sleep(2000);
-//				} catch (InterruptedException e1) {
-//				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+				}
 			}
 		}
 	}

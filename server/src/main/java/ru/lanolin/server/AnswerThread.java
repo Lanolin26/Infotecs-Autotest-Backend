@@ -36,7 +36,7 @@ public class AnswerThread extends Thread {
 							(String)message.getMessage()
 					);
 					UserMessages.STORAGE.add(newMessages);
-					answer.setCommandObject(Message.Type.ANSWER, "Ok");
+					answer.setCommandObject(Message.Type.ANSWER, "Добавлено");
 					break;
 				case SHOW_MY_MESSAGE:
 					List<UserMessages> filtered = UserMessages.STORAGE.stream()
@@ -55,12 +55,16 @@ public class AnswerThread extends Thread {
 					answer.setCommandObject(Message.Type.ARRAY, sorted);
 					break;
 				case DELETE:
-					ListIterator it = UserMessages.STORAGE.listIterator();
+					ListIterator<UserMessages> it = UserMessages.STORAGE.stream()
+							.filter(userMessages -> userMessages.getLogin().equals(message.getLogin()))
+							.sorted(Comparator.comparing(UserMessages::getDate))
+							.collect(Collectors.toList())
+							.listIterator();
 					int id = Integer.parseInt(message.getMessage().toString());
 					boolean success = false;
 					while (it.hasNext()){
 						if(it.nextIndex() == id){
-							it.remove();
+							UserMessages.STORAGE.remove(it.next());
 							success = true;
 							break;
 						}
@@ -70,6 +74,7 @@ public class AnswerThread extends Thread {
 						answer.setCommandObject(Message.Type.ANSWER, "Успешно удалено");
 					else
 						answer.setCommandObject(Message.Type.ERROR, "Не удалено");
+
 					break;
 				default:
 					answer.setCommandObject(Message.Type.ERROR, "Неизвестная комманда");

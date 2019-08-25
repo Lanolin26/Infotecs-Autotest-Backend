@@ -1,16 +1,7 @@
 package ru.lanolin.messages;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString(of = {"login", "type", "message"})
-@NoArgsConstructor
 public class Message implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
@@ -36,9 +27,40 @@ public class Message implements Serializable, Cloneable {
 		this.message = message;
 	}
 
+	public Message() {  }
+
 	public void setCommandObject(Type command, Object text) {
 		this.setType(command);
 		this.setMessage(text);
+	}
+
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public Object getMessage() {
+		return message;
+	}
+
+	public void setMessage(Object message) {
+		this.message = message;
+	}
+
+	@Override
+	public String toString() {
+		return "Message{" + "login='" + login + '\'' + ", type=" + type + ", message=" + message + '}';
 	}
 
 	@Override
