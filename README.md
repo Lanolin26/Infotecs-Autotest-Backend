@@ -1,5 +1,7 @@
 # Infotecs Java Back-end приложение  
   
+[![Build Status](https://img.shields.io/github/release/pandao/editor.md.svg)](https://github.com/Lanolin26/Infotecs-Autotest-Backend/releases/tag/v1.0)
+  
 ## Инструкция по сборке  
 
 1. Скачайте исходные файлы проекта
