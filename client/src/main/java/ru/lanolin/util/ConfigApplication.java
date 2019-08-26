@@ -20,7 +20,7 @@ public class ConfigApplication {
 	}
 
 	public void load(){
-		InputStream propertyFile = ru.lanolin.Main.class.getClassLoader().getResourceAsStream("ru/lanolin/application.properties");
+		InputStream propertyFile = ru.lanolin.Main.class.getClassLoader().getResourceAsStream("application.properties");
 		try {
 			properties.load(propertyFile);
 		} catch (IOException e) {

@@ -79,12 +79,8 @@ public class Server {
 						socketClient.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 						socketClient.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 						System.out.println("Connection Accepted: " + socketClient.getRemoteAddress() + "\n");
-//					} else if(myKey.isConnectable()){
-//						System.out.println("Connect");
 					} else if (myKey.isReadable()) {
 						SocketChannel socketChannel = (SocketChannel) myKey.channel();
-//						System.out.println("Readebl" + socketChannel/);
-//						new AnswerThread(selector, socketChannel).start();
 						readInSocketClient(socketChannel);
 					}
 					selectionKeyIterator.remove();

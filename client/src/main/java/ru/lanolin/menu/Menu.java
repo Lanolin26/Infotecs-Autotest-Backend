@@ -1,4 +1,4 @@
-package ru.lanolin.client.menu;
+package ru.lanolin.menu;
 
 import ru.lanolin.messages.Message;
 import ru.lanolin.util.Utils;

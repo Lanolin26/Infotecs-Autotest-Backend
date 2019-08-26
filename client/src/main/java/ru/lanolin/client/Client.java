@@ -1,7 +1,6 @@
 package ru.lanolin.client;
 
 import ru.lanolin.Main;
-import ru.lanolin.client.threads.HeartBeatThread;
 import ru.lanolin.util.ConfigApplication;
 import ru.lanolin.util.Utils;
 
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,7 +25,6 @@ public class Client {
 	private final Lock pause = new ReentrantLock();
 
 	private HeartBeatThread heartbeatThread;
-//	private final ThreadReader threadReader;
 
 	private Writer writer;
 	private Reader reader;

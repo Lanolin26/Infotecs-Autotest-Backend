@@ -1,12 +1,11 @@
 package ru.lanolin;
 
 import ru.lanolin.client.Client;
-import ru.lanolin.client.menu.Menu;
+import ru.lanolin.menu.Menu;
 import ru.lanolin.util.ConfigApplication;
 import ru.lanolin.util.Utils;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Main {

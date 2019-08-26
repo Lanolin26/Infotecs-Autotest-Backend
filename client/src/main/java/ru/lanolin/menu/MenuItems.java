@@ -1,4 +1,4 @@
-package ru.lanolin.client.menu;
+package ru.lanolin.menu;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

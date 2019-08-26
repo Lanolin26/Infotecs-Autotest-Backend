@@ -1,6 +1,5 @@
-package ru.lanolin.client.threads;
+package ru.lanolin.client;
 
-import ru.lanolin.client.Client;
 import ru.lanolin.messages.Message;
 import ru.lanolin.util.Utils;
 
@@ -9,7 +8,7 @@ import java.io.IOException;
 public class HeartBeatThread extends Thread {
 
 	private boolean tryToReconnect = true;
-	private Message ping = new Message();
+	private Message ping;
 	private long heartbeatDelayMillis = 2000;
 	private long deltaSleep = 50;
 
